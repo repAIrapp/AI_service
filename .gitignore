@@ -1,0 +1,22 @@
+# Node modules
+node_modules/
+
+# Environnements
+.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Système
+.DS_Store
+
+# Cache
+.cache/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
