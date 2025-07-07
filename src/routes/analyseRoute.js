@@ -1,14 +1,3 @@
-// const express = require('express');
-// const multer = require('multer');
-// const { analyzeImage, analyzeText } = require('../controllers/analyseController');
-
-// const router = express.Router();
-// const upload = multer({ dest: 'uploads/' });
-
-// router.post('/image', upload.single('photo'), analyzeImage);
-// router.post('/text', analyzeText);
-
-// module.exports = router;
 
 
 const express = require('express');
