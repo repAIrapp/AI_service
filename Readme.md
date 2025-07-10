@@ -1,3 +1,4 @@
+IBRAHIMI Yasmine
 #  Service IA – Analyse et Réparation d’Objets
 
 Ce service permet d’analyser un objet  à partir d’une **image** ou d’une **description textuelle**, et de fournir automatiquement :
