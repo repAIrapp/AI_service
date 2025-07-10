@@ -5,9 +5,6 @@ const { searchRepairVideos } = require('../services/youtubeService');
 require('dotenv').config();
 
 exports.fullAnalyze = async (req, res) => {
-  console.log("req.body:", req.body);
-console.log("📎 req.file:", req.file);
-
   try {
     let imageAnalysis;
     let keyword;
@@ -23,7 +20,7 @@ console.log("📎 req.file:", req.file);
 
     //  Si image présente
     if (req.file) {
-      console.log("Analyse d'image reçue");
+      
       const filePath = req.file.path;
      const detection = await detectObject(filePath, req.file.mimetype);
 
@@ -36,7 +33,6 @@ console.log("📎 req.file:", req.file);
 
     //  Sinon analyse texte
     else if (description) {
-      console.log("✍️ Analyse de texte reçue :", description);
       imageAnalysis = description;
       keyword = description;
       solution = await askOpenAI(`Comment réparer : ${keyword}`);
@@ -50,16 +46,8 @@ console.log("📎 req.file:", req.file);
     // Vidéos YouTube
     const videos = await searchRepairVideos(keyword);
 
-    //  Envoi du résultat vers le DB Service
+    //  envoi du résultat vers le DB Service
     try {
-      console.log("Payload envoyé au DB service :", {
-  userId,
-  objectrepairedId,
-  imageUrl,
-  text: imageAnalysis,
-  resultIA: solution
-});
-
       await axios.post(
         `${process.env.DB_SERVICE_URL}/api/ia-requests`,
         {
@@ -75,11 +63,7 @@ console.log("📎 req.file:", req.file);
           }
         }
       );
-      console.log(" Résultat IA enregistré dans le DB service");
-      console.log("📥 REÇU DU FRONTEND =>")
-console.log("userId:", userId)
-console.log("objectrepairedId:", objectrepairedId)
-console.log("imageUrl (path):", imageUrl)
+      
 
    } catch (err) {
   console.error("Erreur enregistrement DB service :");
@@ -92,7 +76,7 @@ console.log("imageUrl (path):", imageUrl)
 }
 
 
-    // Réponse finale vers le front
+    // réponse finale vers le front
     res.json({
       objet_detecte: keyword,
       analyse: imageAnalysis,
@@ -101,7 +85,7 @@ console.log("imageUrl (path):", imageUrl)
     });
 
   } catch (err) {
-    console.error("❌ Erreur dans fullAnalyze:", err);
+    console.error("Erreur dans fullAnalyze:", err);
     res.status(500).json({ error: 'Erreur dans le traitement de la demande.' });
   }
 };

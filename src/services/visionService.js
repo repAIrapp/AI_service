@@ -4,10 +4,10 @@ const { searchRepairVideos } = require('./youtubeService');
 
 exports.detectObject = async (filePath, mimetype) => {
   try {
-    // 1. Chargement de l'image
+    // 1. chargement de l'image
     const imageData = fs.readFileSync(filePath, { encoding: 'base64' });
 
-    // 2. Prompt optimisé sans ```markdown```
+    
     const REPAIR_PROMPT = `
 Analyse cette image d'objet à réparer en répondant dans ce format :
 
@@ -29,7 +29,7 @@ Exemple :
 [OUTILS] Colle epoxy, serre-joints, pinceau fin
 `;
 
-    // 3. Appel API OpenAI
+    // 3. appel API OpenAI
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [
@@ -54,16 +54,14 @@ Exemple :
       temperature: 0.2
     });
 
-    // 4. Nettoyage et extraction
+    // 4. nettoyage et extraction
     let rawText = response.choices[0].message.content;
-    console.log("Réponse GPT brute :", rawText);
-
-    // Supprime les ```markdown``` s'ils sont présents
+    // supprime les ```markdown``` s'ils sont présents
     if (rawText.includes('```')) {
       rawText = rawText.replace(/```(?:plaintext)?\n?/g, '').replace(/```$/, '').trim();
     }
 
-    console.log("🧼 Texte nettoyé :", rawText);
+    
 
     const extractData = (text) => {
       const result = {

@@ -9,20 +9,18 @@ const cors = require('cors')
 const PORT = process.env.PORT;
 
 const register = new client.Registry();
-// Crée une métrique de type Counter
+// métrique de type Counter
 const AIRequestsCounter = new client.Counter({
   name: "ai_requests_total",
   help: "Nombre total de requêtes sur le service AI",
   labelNames: ["method", "route", "status"]
 });
 
-// Enregistre la métrique dans le registre
+//  métrique  saved dans le registre
 register.registerMetric(AIRequestsCounter);
-
-// Collecte les métriques système par défaut
 client.collectDefaultMetrics({ register });
 
-// Middleware pour enregistrer chaque requête
+// middleware pour enregistrer chaque requête
 app.use((req, res, next) => {
   res.on("finish", () => {
     AIRequestsCounter.inc({
@@ -53,7 +51,7 @@ metricsApp.get("/metrics", async (req, res) => {
   res.send(await register.metrics());
 });
 metricsApp.listen(9102, () => {
-  console.log("📊 AI service metrics exposed on http://localhost:9102/metrics");
+  console.log("AI service metrics exposed on http://localhost:9102/metrics");
 });
 
 

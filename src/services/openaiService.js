@@ -7,7 +7,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// ✅ Fonction pour analyse d'image
+// fonction pour analyse d'image
 async function analyzeImageWithOpenAI(imagePath) {
   try {
     const imageData = fs.readFileSync(imagePath, { encoding: 'base64' });
@@ -41,7 +41,7 @@ async function analyzeImageWithOpenAI(imagePath) {
   }
 }
 
-// ✅ Fonction pour analyse de texte
+// Fonction pour analyse de texte
 async function askOpenAI(text) {
   try {
     const response = await openai.chat.completions.create({
