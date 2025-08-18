@@ -1,27 +1,42 @@
-const js = require('@eslint/js');
-const globals = require('globals');
+// eslint.config.cjs
+const js = require("@eslint/js");
+const globals = require("globals");
 
 module.exports = [
+  // Base JS
   js.configs.recommended,
+
+  // Règles générales (Node)
   {
+    files: ["**/*.js"],
     languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'commonjs',
+      ecmaVersion: 2021,
+      sourceType: "commonjs",
       globals: {
-        ...globals.node, // => autorise process, console, __dirname, etc.
+        ...globals.node,   // => définit process, console, __dirname, etc.
       },
     },
     rules: {
-      // autorise console dans un service Node
-      'no-console': 'off',
-      // ignore les params non utilisés qui commencent par _
-      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      // tes règles au besoin
     },
+  },
+
+  // Spécifique aux tests : déclare les globals Jest
+  {
+    files: ["tests/**/*.js", "**/*.test.js", "**/__tests__/**/*.js"],
+    languageOptions: {
+      globals: {
+        ...globals.jest,  // => jest, describe, test, expect, beforeEach...
+      },
+    },
+  },
+
+  // (Optionnel) ignorer des dossiers
+  {
     ignores: [
-      'node_modules/',
-      'coverage/',
-      '.github/',
-      'uploads/',
+      "node_modules/",
+      "coverage/",
+      "uploads/",
     ],
   },
 ];

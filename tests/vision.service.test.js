@@ -3,6 +3,7 @@ jest.mock('fs', () => ({ readFileSync: jest.fn(() => 'IMG64') }));
 
 // Mock openaiService (openai + extractKeywordFromText)
 const createMock = jest.fn();
+// eslint-disable-next-line no-unused-vars
 const openAIInstance = { chat: { completions: { create: createMock } } };
 jest.mock('../src/services/openaiService', () => ({
   openai: { chat: { completions: { create: jest.fn() } } }, // on remplace après
