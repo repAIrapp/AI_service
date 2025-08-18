@@ -1,15 +1,27 @@
-// eslint.config.cjs (ESLint v9+)
-const js = require("@eslint/js");
+const js = require('@eslint/js');
+const globals = require('globals');
 
 module.exports = [
-  { ignores: ["node_modules/", "coverage/", "uploads/"] },
+  js.configs.recommended,
   {
-    files: ["**/*.js"],
-    languageOptions: { ecmaVersion: 2022, sourceType: "commonjs" },
-    plugins: {},
-    rules: {
-      ...js.configs.recommended.rules,
-      "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'commonjs',
+      globals: {
+        ...globals.node, // => autorise process, console, __dirname, etc.
+      },
     },
+    rules: {
+      // autorise console dans un service Node
+      'no-console': 'off',
+      // ignore les params non utilisés qui commencent par _
+      'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    },
+    ignores: [
+      'node_modules/',
+      'coverage/',
+      '.github/',
+      'uploads/',
+    ],
   },
 ];
