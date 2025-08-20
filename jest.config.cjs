@@ -1,8 +1,8 @@
+const path = require('path'); 
+
 /** @type {import('jest').Config} */
-
-
 module.exports = {
-  rootDir: path.resolve(__dirname),
+  rootDir: path.resolve(), 
   testEnvironment: "node",
   testMatch: ["**/tests/**/*.test.js"],
   clearMocks: true,
@@ -12,8 +12,7 @@ module.exports = {
     "!src/**/index.js"
   ],
   moduleNameMapper: {
-    '^@root/(.*)$': '<rootDir>/$1', 
+    '^@root/(.*)$': '<rootDir>/$1',
   },
-
-  moduleDirectories: ['node_modules', '.'], 
+  moduleDirectories: ['node_modules', '.'],
 };
