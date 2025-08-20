@@ -2,6 +2,7 @@
 
 
 module.exports = {
+  rootDir: path.resolve(__dirname),
   testEnvironment: "node",
   testMatch: ["**/tests/**/*.test.js"],
   clearMocks: true,
@@ -13,5 +14,6 @@ module.exports = {
   moduleNameMapper: {
     '^@root/(.*)$': '<rootDir>/$1', 
   },
+
   moduleDirectories: ['node_modules', '.'], 
 };
