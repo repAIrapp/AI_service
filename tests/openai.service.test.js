@@ -1,5 +1,3 @@
-// tests/openai.service.test.js
-
 // Mock fs (lecture d'image en base64)
 jest.mock('fs', () => ({ readFileSync: jest.fn(() => 'BASE64DATA') }));
 

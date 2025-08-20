@@ -1,4 +1,3 @@
-// tests/verifytoken.middleware.test.js
 const jwt = require('jsonwebtoken')
 
 jest.mock('jsonwebtoken')
