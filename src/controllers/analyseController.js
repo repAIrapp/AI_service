@@ -96,7 +96,8 @@ const axios = require('axios');
 const { detectObject } = require('../services/visionService');
 const { askOpenAI } = require('../services/openaiService');
 const { searchRepairVideos } = require('../services/youtubeService');
-const logger = require('../../logger');
+const logger = require('@root/logger');
+
 
 
 require('dotenv').config();

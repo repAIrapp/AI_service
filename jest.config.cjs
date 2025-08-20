@@ -8,4 +8,7 @@ module.exports = {
     "src/**/*.{js,jsx}",
     "!src/**/index.js"
   ],
+  moduleNameMapper: {
+    '^@root/(.*)$': '<rootDir>/$1',
+  },
 };
