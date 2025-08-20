@@ -1,5 +1,5 @@
 /** @type {import('jest').Config} */
-const path = require('path');
+
 
 module.exports = {
   testEnvironment: "node",
