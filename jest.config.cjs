@@ -1,4 +1,6 @@
 /** @type {import('jest').Config} */
+const path = require('path');
+
 module.exports = {
   testEnvironment: "node",
   testMatch: ["**/tests/**/*.test.js"],
@@ -9,6 +11,7 @@ module.exports = {
     "!src/**/index.js"
   ],
   moduleNameMapper: {
-    '^@root/(.*)$': '<rootDir>/$1',
+    '^@root/(.*)$': '<rootDir>/$1', 
   },
+  moduleDirectories: ['node_modules', '.'], 
 };
