@@ -3,6 +3,7 @@ const express = require('express');
 const analyzeRoutes = require('./src/routes/analyseRoute');
 require('dotenv').config();
 const client = require("prom-client");
+const helmet = require("helmet");
 
 const app = express();
 const cors = require('cors')
@@ -21,6 +22,7 @@ register.registerMetric(AIRequestsCounter);
 client.collectDefaultMetrics({ register });
 
 // middleware pour enregistrer chaque requête
+app.use(helmet());
 app.use((req, res, next) => {
   res.on("finish", () => {
     AIRequestsCounter.inc({
