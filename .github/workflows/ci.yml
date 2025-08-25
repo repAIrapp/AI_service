@@ -31,6 +31,10 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Étape de build (non requise)
+        run: echo "Aucune étape de build requise pour ce microservice"
+
+
       # - name: Coverage report
       #   run: npm test -- --coverage --ci --runInBand
 
