@@ -1,33 +1,3 @@
-// const { google } = require('googleapis');
-// require('dotenv').config();
-
-// const youtube = google.youtube({
-//   version: 'v3',
-//   auth: process.env.YTB_API_KEY,
-// });
-
-// exports.searchRepairVideos = async (query) => {
-//   try {
-//     const res = await youtube.search.list({
-//       part: 'snippet',
-//       q: `comment réparer ${query}`,
-//       maxResults: 3,
-//       type: 'video',
-//       videoEmbeddable: 'true',
-//     });
-
-//     return res.data.items.map(video => ({
-//       title: video.snippet.title,
-//       url: `https://www.youtube.com/watch?v=${video.id.videoId}`,
-//       thumbnail: video.snippet.thumbnails.medium.url,
-//     }));
-//   } catch (err) {
-//     console.error("Erreur YouTube API:", err.message);
-//     return [];
-//   }
-// };
-
-
 
 const { google } = require('googleapis');
 require('dotenv').config();
@@ -37,11 +7,11 @@ const youtube = google.youtube({
   auth: process.env.YTB_API_KEY,
 });
 
-// Normalisation robuste
+// Normalisation 
 const normalize = (s) =>
   (s || '')
     .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // retire les accents
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') 
     .replace(/[^a-z0-9\s-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
@@ -145,7 +115,6 @@ exports.searchRepairVideos = async (ctxOrString) => {
         relevanceLanguage: 'fr',
         regionCode: 'FR',
         safeSearch: 'none',
-        // videoDuration: 'medium', // optionnel : 4–20 min
       });
       results = results.concat(res.data.items || []);
     }
@@ -177,7 +146,6 @@ exports.searchRepairVideos = async (ctxOrString) => {
   }
 };
 
-// Compat : ancien comportement simple
 async function legacySearch(query) {
   try {
     const res = await youtube.search.list({

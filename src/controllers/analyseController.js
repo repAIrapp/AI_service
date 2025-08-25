@@ -26,7 +26,7 @@ exports.fullAnalyze = async (req, res) => {
     }
 
     if (req.file && description) {
-      // ✅ image + texte : on enrichit le prompt multimodal avec "description"
+      //  image + texte : on enrichit le prompt multimodal avec "description"
       const filePath = req.file.path;
       const detection = await detectObject(filePath, req.file.mimetype, description);
       if (!detection.success) {
@@ -70,7 +70,7 @@ exports.fullAnalyze = async (req, res) => {
       );
     }
 
-    // 🔎 Contexte riche pour YouTube à partir de l'analyse + description
+    //  Contexte riche pour YouTube à partir de l'analyse + description
     const ytContext = await extractSearchTerms(
       [analysisText, description || '', keyword || ''].filter(Boolean).join('\n')
     );

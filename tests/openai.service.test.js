@@ -2,7 +2,6 @@
 jest.mock('fs', () => ({ readFileSync: jest.fn(() => 'BASE64DATA') }));
 
 // Mock OpenAI: on expose un constructeur mock (jest.fn())
-// et on garde une référence sur la méthode `create`
 jest.mock('openai', () => {
   const create = jest.fn(); // <- on contrôlera ce mock dans les tests
   const OpenAI = jest.fn().mockImplementation(() => ({
@@ -14,7 +13,6 @@ jest.mock('openai', () => {
 const fs = require('fs');
 const { __mock: openaiMock } = require('openai');
 
-// IMPORTANT: importer le service APRÈS les mocks
 const {
   analyzeImageWithOpenAI,
   askOpenAI,

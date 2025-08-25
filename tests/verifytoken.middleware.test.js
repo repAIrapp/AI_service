@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken')
 
 jest.mock('jsonwebtoken')
 
-// ⚠️ définir avant l'import
+// définir avant l'import
 process.env.JWT_SECRET = 'supersecret'
 
 const verifyToken = require('../src/middlewares/verifytoken')
@@ -19,7 +19,7 @@ describe('Middleware verifyToken', () => {
     jest.clearAllMocks()
   })
 
-  test('❌ renvoie 401 si aucun header Authorization', () => {
+  test(' renvoie 401 si aucun header Authorization', () => {
     const req = { headers: {} }
     const res = createRes()
     const next = jest.fn()
@@ -31,7 +31,7 @@ describe('Middleware verifyToken', () => {
     expect(next).not.toHaveBeenCalled()
   })
 
-  test('❌ renvoie 401 si header mal formé', () => {
+  test('renvoie 401 si header mal formé', () => {
     const req = { headers: { authorization: 'Token abc' } }
     const res = createRes()
     const next = jest.fn()
@@ -43,7 +43,7 @@ describe('Middleware verifyToken', () => {
     expect(next).not.toHaveBeenCalled()
   })
 
-  test('✅ passe à next() si token valide', () => {
+  test(' passe à next() si token valide', () => {
     const payload = { id: 'u123', email: 't@t.com' }
     jwt.verify.mockReturnValue(payload)
 
@@ -58,7 +58,7 @@ describe('Middleware verifyToken', () => {
     expect(next).toHaveBeenCalled()
   })
 
-  test('❌ renvoie 403 si token invalide', () => {
+  test(' renvoie 403 si token invalide', () => {
     jwt.verify.mockImplementation(() => {
       throw new Error('bad token')
     })

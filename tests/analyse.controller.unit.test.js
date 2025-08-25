@@ -1,7 +1,7 @@
-// tests/analyse.controller.unit.test.js
+
 const { fullAnalyze } = require('../src/controllers/analyseController')
 
-// 🔧 Mocks des dépendances
+// Mocks des dépendances
 jest.mock('axios', () => ({ post: jest.fn() }))
 jest.mock('../src/services/visionService', () => ({ detectObject: jest.fn() }))
 jest.mock('../src/services/openaiService', () => ({ askOpenAI: jest.fn() }))
@@ -29,7 +29,7 @@ describe('analyseController.fullAnalyze (unit)', () => {
     jest.clearAllMocks()
   })
 
-  test('✅ avec image: appelle detectObject, YouTube, poste en DB et renvoie 200', async () => {
+  test(' avec image: appelle detectObject, YouTube, poste en DB et renvoie 200', async () => {
     const req = {
       body: { userId: 'u1', objectrepairedId: 'obj1' },
       headers: { authorization: token },
@@ -80,7 +80,7 @@ describe('analyseController.fullAnalyze (unit)', () => {
     expect(res.status).not.toHaveBeenCalledWith(400)
   })
 
-  test('✅ avec description (sans image): appelle askOpenAI + YouTube et renvoie 200', async () => {
+  test('avec description (sans image): appelle askOpenAI + YouTube et renvoie 200', async () => {
     const req = {
       body: { userId: 'u2', objectrepairedId: 'obj2', description: 'écran fissuré smartphone' },
       headers: { authorization: token },
@@ -105,14 +105,14 @@ describe('analyseController.fullAnalyze (unit)', () => {
     })
   })
 
-  test('❌ 400 si userId ou objectrepairedId manquants', async () => {
+  test('400 si userId ou objectrepairedId manquants', async () => {
     const res = createRes()
     await fullAnalyze({ body: {}, headers: {} }, res)
     expect(res.status).toHaveBeenCalledWith(400)
     expect(res.json).toHaveBeenCalledWith({ error: 'userId et objectrepairedId sont requis.' })
   })
 
-  test('❌ 400 si ni image ni description', async () => {
+  test('400 si ni image ni description', async () => {
     const req = {
       body: { userId: 'u1', objectrepairedId: 'o1' },
       headers: { authorization: token },
@@ -125,7 +125,7 @@ describe('analyseController.fullAnalyze (unit)', () => {
     expect(res.json).toHaveBeenCalledWith({ error: 'Aucune image ou description reçue.' })
   })
 
-  test('⚠️ erreur DB (axios.post) → on log mais on répond quand même 200', async () => {
+  test('erreur DB (axios.post) → on log mais on répond quand même 200', async () => {
     const req = {
       body: { userId: 'u1', objectrepairedId: 'obj1', description: 'charnière cassée' },
       headers: { authorization: token },
