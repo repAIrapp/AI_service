@@ -1,12 +1,15 @@
+
 const axios = require('axios');
 const { detectObject } = require('../services/visionService');
-const { askOpenAI } = require('../services/openaiService');
+const { askOpenAI, extractKeywordFromText, extractSearchTerms } = require('../services/openaiService');
 const { searchRepairVideos } = require('../services/youtubeService');
+const logger = require('../../logger'); 
+
 require('dotenv').config();
 
 exports.fullAnalyze = async (req, res) => {
   try {
-    let imageAnalysis;
+    let analysisText;
     let keyword;
     let solution;
     let imageUrl = null;
@@ -18,35 +21,62 @@ exports.fullAnalyze = async (req, res) => {
       return res.status(400).json({ error: 'userId et objectrepairedId sont requis.' });
     }
 
-    //  Si image présente
-    if (req.file) {
-      
-      const filePath = req.file.path;
-     const detection = await detectObject(filePath, req.file.mimetype);
-
-
-      imageAnalysis = `[OBJET] ${detection.objet}\n[PROBLEME] ${detection.probleme}\n[REPARATION]\n${detection.solution}\n[OUTILS] ${detection.outils}`;
-      keyword = detection.objet;
-      solution = detection.solution;
-      imageUrl = filePath;
-    }
-
-    //  Sinon analyse texte
-    else if (description) {
-      imageAnalysis = description;
-      keyword = description;
-      solution = await askOpenAI(`Comment réparer : ${keyword}`);
-    }
-
-    //  Rien reçu
-    else {
+    if (!req.file && !description) {
       return res.status(400).json({ error: 'Aucune image ou description reçue.' });
     }
 
-    // Vidéos YouTube
-    const videos = await searchRepairVideos(keyword);
+    if (req.file && description) {
+      // ✅ image + texte : on enrichit le prompt multimodal avec "description"
+      const filePath = req.file.path;
+      const detection = await detectObject(filePath, req.file.mimetype, description);
+      if (!detection.success) {
+        return res.status(422).json({ error: detection.error, conseil: detection.conseil });
+      }
 
-    //  envoi du résultat vers le DB Service
+      analysisText =
+        `[OBJET] ${detection.objet}\n` +
+        `[PROBLEME] ${detection.probleme}\n` +
+        `[REPARATION]\n${detection.solution}\n` +
+        `[OUTILS] ${detection.outils}`;
+
+      keyword = detection.keyword;
+      solution = detection.solution;
+      imageUrl = filePath;
+
+    } else if (req.file) {
+      // image seule
+      const filePath = req.file.path;
+      const detection = await detectObject(filePath, req.file.mimetype);
+      if (!detection.success) {
+        return res.status(422).json({ error: detection.error, conseil: detection.conseil });
+      }
+
+      analysisText =
+        `[OBJET] ${detection.objet}\n` +
+        `[PROBLEME] ${detection.probleme}\n` +
+        `[REPARATION]\n${detection.solution}\n` +
+        `[OUTILS] ${detection.outils}`;
+
+      keyword = detection.keyword;
+      solution = detection.solution;
+      imageUrl = filePath;
+
+    } else {
+      // texte seul
+      analysisText = description;
+      keyword = await extractKeywordFromText(description);
+      solution = await askOpenAI(
+        `Tu es un expert en réparation. Détaille une solution claire et sécurisée pour: ${description}`
+      );
+    }
+
+    // 🔎 Contexte riche pour YouTube à partir de l'analyse + description
+    const ytContext = await extractSearchTerms(
+      [analysisText, description || '', keyword || ''].filter(Boolean).join('\n')
+    );
+    const videos = await searchRepairVideos(ytContext);
+
+    // Enregistrement dans le DB-service (best-effort)
     try {
       await axios.post(
         `${process.env.DB_SERVICE_URL}/api/ia-requests`,
@@ -54,38 +84,29 @@ exports.fullAnalyze = async (req, res) => {
           userId,
           objectrepairedId,
           imageUrl,
-          text: imageAnalysis,
+          text: analysisText,
           resultIA: solution
         },
-        {
-          headers: {
-            Authorization: token
-          }
-        }
+        { headers: { Authorization: token } }
       );
-      
+    } catch (err) {
+      logger.error(`Erreur enregistrement DB service : ${err.message}`);
+      if (err.response) {
+        logger.error(`Status: ${err.response.status}`);
+        logger.error(`Data: ${JSON.stringify(err.response.data)}`);
+      }
+    }
 
-   } catch (err) {
-  console.error("Erreur enregistrement DB service :");
-  if (err.response) {
-    console.error("Status:", err.response.status);
-    console.error("Data:", err.response.data);
-  } else {
-    console.error("Message:", err.message);
-  }
-}
-
-
-    // réponse finale vers le front
-    res.json({
+    return res.json({
       objet_detecte: keyword,
-      analyse: imageAnalysis,
+      analyse: analysisText,
       solution,
       videos
     });
 
   } catch (err) {
-    console.error("Erreur dans fullAnalyze:", err);
-    res.status(500).json({ error: 'Erreur dans le traitement de la demande.' });
+    logger.error(`Erreur dans fullAnalyze: ${err.message}`);
+    return res.status(500).json({ error: 'Erreur dans le traitement de la demande.' });
   }
 };
+

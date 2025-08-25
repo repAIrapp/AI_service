@@ -12,6 +12,7 @@ function verifyToken(req, res, next) {
     const payload = jwt.verify(token, SECRET);
     req.user = payload; // Stocke les infos du token dans req.user
     next();
+    // eslint-disable-next-line no-unused-vars
   } catch (err) {
     return res.status(403).json({ error: 'Token invalide' });
   }
