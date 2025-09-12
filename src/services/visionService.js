@@ -101,7 +101,7 @@
 
 
 const fs = require('fs');
-const path = require('path');
+//const path = require('path');
 const { analyzeImageToJson } = require('./openaiService');
 
 // Analyse image -> JSON structuré multi-domaines
