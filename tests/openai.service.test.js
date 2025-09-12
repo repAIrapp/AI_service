@@ -20,7 +20,7 @@ describe('openaiService', () => {
     const res = await askOpenAI('hello')
     expect(openaiMock.create).toHaveBeenCalledWith(
       expect.objectContaining({
-        model: expect.any(String), // gpt-4o-mini par défaut, on ne fige pas
+        model: expect.any(String), // gpt-4o-mini par défaut
         messages: [{ role: 'user', content: 'hello' }],
         max_tokens: 500,
       })

@@ -35,7 +35,7 @@ describe('analyseController.fullAnalyze (unit)', () => {
     }
     const res = createRes()
 
-    // 👇 Le contrôleur attend detection.success === true et device.class pour objet_detecte
+    // Le contrôleur attend detection.success === true et device.class pour objet_detecte
     detectObject.mockResolvedValue({
       success: true,
       objet: 'vase en céramique',

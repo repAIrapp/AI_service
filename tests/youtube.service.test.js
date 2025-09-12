@@ -13,7 +13,7 @@ describe('youtubeService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // ⚠️ Le service fait 2 requêtes search.list (queries différentes) -> on renvoie un résultat par défaut pour TOUT appel
+    //Le service fait 2 requêtes search.list (queries différentes) -> on renvoie un résultat par défaut pour TOUT appel
     searchList.mockResolvedValue({
       data: {
         items: [
