@@ -1,31 +1,42 @@
-
 const request = require('supertest');
 const express = require('express');
 
 // --- Mocks ---
+
+// 1) express-validator doit être CHAÎNABLE (body('x').notEmpty().withMessage(...))
+jest.mock('express-validator', () => {
+  const makeChain = () => {
+    const mw = (req, _res, next) => next();
+    mw.notEmpty = () => ({ withMessage: () => mw });
+    mw.optional = () => ({ isString: () => ({ withMessage: () => mw }) });
+    return mw;
+  };
+  return {
+    body: () => makeChain(),
+    validationResult: () => ({ isEmpty: () => true, array: () => [] }),
+  };
+});
+
+// 2) fullAnalyze bypass
 jest.mock('../src/controllers/analyseController', () => ({
   fullAnalyze: jest.fn((req, res) => res.status(200).json({ ok: true })),
 }));
 
-jest.mock('../src/middlewares/verifytoken', () =>
-  jest.fn((req, res, next) => next())
-);
+// 3) token OK
+jest.mock('../src/middlewares/verifytoken', () => jest.fn((req, res, next) => next()));
 
-// Mock multer qui simule aussi le parsing des champs texte
+// 4) quotaProxy pass-through (sinon il ferait un appel HTTP réel)
+jest.mock('../src/middlewares/quotasproxy', () => ({
+  quotaProxy: jest.fn((req, res, next) => next()),
+}));
+
+// 5) multer : injecte un pseudo-fichier + les champs
 jest.mock('multer', () => {
   return () =>
     ({
       single: () => (req, _res, next) => {
-        // simule le fichier
-        req.file = {
-          path: 'fakepath/test.jpg',
-          mimetype: 'image/jpeg',
-          originalname: 'test.jpg',
-        };
-        // simule les champs texte pour que la validation passe
-        if (!req.body) req.body = {};
-        if (!('userId' in req.body)) req.body.userId = 'fakeUserId';
-        if (!('objectrepairedId' in req.body)) req.body.objectrepairedId = 'fakeObjectId';
+        req.file = { path: 'fakepath/test.jpg', mimetype: 'image/jpeg', originalname: 'test.jpg' };
+        req.body = { ...(req.body || {}), userId: 'fakeUserId', objectrepairedId: 'fakeObjectId' };
         next();
       },
     });
@@ -41,14 +52,13 @@ describe('analyseRoute (unit)', () => {
     jest.clearAllMocks();
     app = express();
     app.use(express.json());
-    app.use('/analyse', analyseRoute); 
+    app.use('/analyse', analyseRoute);
   });
 
   test('POST /analyse/full appelle fullAnalyze et retourne 200', async () => {
     const res = await request(app)
       .post('/analyse/full')
       .set('Authorization', 'Bearer faketoken')
-      // on envoie quand même les champs, mais le mock assure le parsing
       .field('userId', 'fakeUserId')
       .field('objectrepairedId', 'fakeObjectId')
       .attach('photo', Buffer.from('fakeimg'), {
