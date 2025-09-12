@@ -1,5 +1,3 @@
-// tests/youtube.service.test.js
-
 // On prépare un mock de googleapis
 jest.mock('googleapis', () => {
   const listMock = jest.fn();

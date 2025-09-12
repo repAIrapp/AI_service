@@ -1,4 +1,4 @@
-// eslint.config.cjs
+
 const js = require("@eslint/js");
 const globals = require("globals");
 
@@ -17,7 +17,7 @@ module.exports = [
       },
     },
     rules: {
-      // tes règles au besoin
+      // 
     },
   },
 

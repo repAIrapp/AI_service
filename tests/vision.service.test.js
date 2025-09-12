@@ -1,4 +1,3 @@
-// Mock fs
 jest.mock('fs', () => ({ readFileSync: jest.fn(() => 'IMG64') }));
 
 // Mock openaiService (openai + extractKeywordFromText)
